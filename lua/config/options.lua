@@ -42,3 +42,10 @@ vim.opt.pumheight = 8
 
 -- Foldy dostępne, ale pliki otwierają się rozwinięte
 opt.foldlevel = 99
+
+-- Przeładuj plik, gdy zmieni go inny program (np. Claude Code)
+opt.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+    group = vim.api.nvim_create_augroup("user.autoread", { clear = true }),
+    command = "silent! checktime",
+})

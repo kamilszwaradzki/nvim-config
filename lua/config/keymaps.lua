@@ -62,3 +62,13 @@ map("n", "<leader>tn", function() require("config.pytest").nearest() end, { desc
 map("n", "<leader>tf", function() require("config.pytest").file() end, { desc = "Testy w pliku" })
 map("n", "<leader>ta", function() require("config.pytest").all() end, { desc = "Wszystkie testy" })
 map("n", "<leader>tl", function() require("config.pytest").last() end, { desc = "Powtórz ostatni" })
+map("n", "<leader>ot", "<cmd>edit TODO.md<cr>", { desc = "Otwórz TODO projektu" })
+
+-- Projekty
+map("n", "<leader>pa", function() require("config.projects").add() end, { desc = "Dodaj bieżący katalog do projektów" })
+map("n", "<leader>pp", function() require("config.projects").pick() end, { desc = "Przełącz projekt" })
+
+-- Zakładki
+map("n", "<leader>ba", function() require("config.bookmarks").add() end, { desc = "Dodaj zakładkę" })
+map("n", "<leader>bd", function() require("config.bookmarks").delete() end, { desc = "Usuń zakładkę" })
+map("n", "<leader>bl", function() require("config.bookmarks").list() end, { desc = "Lista zakładek" })

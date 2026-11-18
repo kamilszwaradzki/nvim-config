@@ -15,6 +15,8 @@ Built for low-spec hardware (tested on a laptop with 4 GB RAM): native Neovim 0.
 | Debugging | [nvim-dap](https://github.com/mfussenegger/nvim-dap) + [nvim-dap-python](https://github.com/mfussenegger/nvim-dap-python) + debugpy |
 | Running tests | small built-in pytest runner (`lua/config/pytest.lua`) |
 | Fuzzy finding | [fzf-lua](https://github.com/ibhagwan/fzf-lua) (`max-perf` profile) |
+| Project switching | small built-in module (`lua/config/projects.lua`), saved list of paths |
+| Bookmarks with descriptions | small built-in module (`lua/config/bookmarks.lua`), per project |
 | Plugin manager | [lazy.nvim](https://github.com/folke/lazy.nvim) |
 
 ## Requirements
@@ -54,7 +56,7 @@ Make sure `~/.local/bin` is in your `PATH`.
 # back up an existing config first
 mv ~/.config/nvim ~/.config/nvim.bak 2>/dev/null
 
-git clone git@github.com:TWOJ_LOGIN/nvim-config.git ~/.config/nvim
+git clone git@github.com:kamilszwaradzki/nvim-config.git ~/.config/nvim
 nvim
 ```
 
@@ -79,7 +81,9 @@ Verify:
     │   ├── options.lua       # editor options
     │   ├── keymaps.lua       # general, LSP and pytest keymaps
     │   ├── lazy.lua          # lazy.nvim bootstrap
-    │   └── pytest.lua        # pytest runner
+    │   ├── pytest.lua        # pytest runner
+    │   ├── projects.lua      # project switcher
+    │   └── bookmarks.lua     # bookmarks with descriptions
     └── plugins
         ├── lsp.lua           # BasedPyright + Ruff
         ├── treesitter.lua    # parsers, highlighting, folding
@@ -174,10 +178,34 @@ Results open in a terminal split at the bottom; press `q` there to close it. Use
 
 `.venv`, `__pycache__`, `node_modules` and `.git` are excluded from file search and grep.
 
+### Projects
+
+| Keys | Action |
+|---|---|
+| `<leader>pa` | add current working directory to the project list |
+| `<leader>pp` | switch project |
+| `Ctrl-x` (in the picker) | remove project from the list (the directory is not touched) |
+
+Projects can live anywhere on disk. Switching saves all buffers, closes the previous project's buffers, **stops its LSP servers** (to free RAM), changes the working directory and opens the file picker.
+
+The list is stored in `~/.local/share/nvim/projects.json`, outside this repo, so private paths never end up on GitHub.
+
+### Bookmarks
+
+| Keys | Action |
+|---|---|
+| `<leader>ba` | add bookmark with a description (same line again: edit the description) |
+| `<leader>bd` | delete bookmark on the current line |
+| `<leader>bl` | list bookmarks of the current project (with preview) |
+
+Bookmarked lines are marked with `»` in the sign column. Bookmarks follow the code when lines are added or removed above them, and the new positions are saved on `:w`. Changes made outside Neovim (`git checkout`, external tools) do not move them.
+
+Each project (working directory) has its own list in `~/.local/share/nvim/bookmarks/`.
+
 ## Notes
 
 - **Position encoding.** BasedPyright only supports UTF-16, Ruff prefers UTF-8. Mixed encodings in one buffer trigger a warning in `:checkhealth vim.lsp`, so Ruff is forced to UTF-16 in `lua/plugins/lsp.lua`.
-- **Project root.** Start Neovim from the project root (where `pyproject.toml` or `.git` lives). LSP root detection, the debugger's `${workspaceFolder}` and the pytest runner all depend on it.
+- **Project root.** Start Neovim from the project root (where `pyproject.toml` or `.git` lives). LSP root detection, the debugger's `${workspaceFolder}`, the pytest runner, the project list and bookmarks all depend on it.
 - **Project venv.** Debugger and test runner pick up `.venv` in the project directory automatically.
 - **Memory.** BasedPyright runs with `diagnosticMode = "openFilesOnly"` to keep RAM usage low on larger projects.
 
