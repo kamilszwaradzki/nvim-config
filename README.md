@@ -101,6 +101,7 @@ Leader key: `Space`.
 |---|---|
 | `<leader>w` | save |
 | `<leader>q` | quit |
+| `<leader>ot` | open the project's `TODO.md` |
 | `<Esc>` | clear search highlight |
 | `Ctrl-h/j/k/l` | move between windows |
 | `J` / `K` (visual) | move selected lines down / up |
