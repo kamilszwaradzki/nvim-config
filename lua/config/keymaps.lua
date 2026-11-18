@@ -72,3 +72,10 @@ map("n", "<leader>pp", function() require("config.projects").pick() end, { desc 
 map("n", "<leader>ba", function() require("config.bookmarks").add() end, { desc = "Dodaj zakładkę" })
 map("n", "<leader>bd", function() require("config.bookmarks").delete() end, { desc = "Usuń zakładkę" })
 map("n", "<leader>bl", function() require("config.bookmarks").list() end, { desc = "Lista zakładek" })
+
+-- Git
+map("n", "<leader>gg", function() require("config.lazygit").open() end, { desc = "lazygit" })
+map("n", "<leader>gs", function() require("fzf-lua").git_status() end, { desc = "Git status" })
+map("n", "<leader>gc", function() require("fzf-lua").git_commits() end, { desc = "Historia projektu" })
+map("n", "<leader>gC", function() require("fzf-lua").git_bcommits() end, { desc = "Historia pliku" })
+map("n", "<leader>gb", function() require("fzf-lua").git_branches() end, { desc = "Gałęzie" })

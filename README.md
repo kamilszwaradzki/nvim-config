@@ -15,6 +15,8 @@ Built for low-spec hardware (tested on a laptop with 4 GB RAM): native Neovim 0.
 | Debugging | [nvim-dap](https://github.com/mfussenegger/nvim-dap) + [nvim-dap-python](https://github.com/mfussenegger/nvim-dap-python) + debugpy |
 | Running tests | small built-in pytest runner (`lua/config/pytest.lua`) |
 | Fuzzy finding | [fzf-lua](https://github.com/ibhagwan/fzf-lua) (`max-perf` profile) |
+| Git: changes in the current file | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) |
+| Git: full workflow | [lazygit](https://github.com/jesseduffield/lazygit) in a floating window (`lua/config/lazygit.lua`) |
 | Project switching | small built-in module (`lua/config/projects.lua`), saved list of paths |
 | Bookmarks with descriptions | small built-in module (`lua/config/bookmarks.lua`), per project |
 | Plugin manager | [lazy.nvim](https://github.com/folke/lazy.nvim) |
@@ -26,12 +28,13 @@ Built for low-spec hardware (tested on a laptop with 4 GB RAM): native Neovim 0.
 - `git`, `curl`, `tar`, a C compiler (`gcc`)
 - [tree-sitter CLI](https://github.com/tree-sitter/tree-sitter/releases) **0.26.1+** (Debian stable ships an older version, so use the release binary)
 - `fzf`, `ripgrep`, `fd`, `bat`
+- `lazygit`
 
 ### Install external tools (Debian)
 
 ```bash
 # system packages
-sudo apt install git curl tar gcc fzf ripgrep fd-find bat
+sudo apt install git curl tar gcc fzf ripgrep fd-find bat lazygit
 
 # Python tooling (installed to ~/.local/bin)
 uv tool install basedpyright
@@ -83,12 +86,14 @@ Verify:
     │   ├── lazy.lua          # lazy.nvim bootstrap
     │   ├── pytest.lua        # pytest runner
     │   ├── projects.lua      # project switcher
-    │   └── bookmarks.lua     # bookmarks with descriptions
+    │   ├── bookmarks.lua     # bookmarks with descriptions
+    │   └── lazygit.lua       # lazygit in a floating window
     └── plugins
         ├── lsp.lua           # BasedPyright + Ruff
         ├── treesitter.lua    # parsers, highlighting, folding
         ├── dap.lua           # debugger (file, pytest, Django, FastAPI)
-        └── fzf.lua           # fuzzy finder
+        ├── fzf.lua           # fuzzy finder
+        └── git.lua           # gitsigns
 ```
 
 ## Keymaps
@@ -178,6 +183,23 @@ Results open in a terminal split at the bottom; press `q` there to close it. Use
 | `<leader>fk` | keymaps |
 
 `.venv`, `__pycache__`, `node_modules` and `.git` are excluded from file search and grep.
+
+### Git
+
+| Keys | Action |
+|---|---|
+| `]h` / `[h` | next / previous change (hunk) |
+| `<leader>hp` | preview change under cursor |
+| `<leader>hs` | stage change under cursor |
+| `<leader>hr` | reset change under cursor |
+| `<leader>hb` | blame current line |
+| `<leader>hd` | diff current file |
+| `<leader>gg` | open lazygit (`q` closes it) |
+| `<leader>gs` | git status |
+| `<leader>gc` / `<leader>gC` | commit history of project / current file |
+| `<leader>gb` | branches |
+
+Changed lines are shown by coloring the line number (green: added, blue: changed, red: deleted), so the sign column stays free for diagnostics and bookmarks. Hunk actions work on the change under the cursor and compare against the index: staged changes are not shown. After lazygit closes, open buffers are reloaded so a checkout or pull is picked up immediately.
 
 ### Projects
 
