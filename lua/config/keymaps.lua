@@ -74,8 +74,21 @@ map("n", "<leader>bd", function() require("config.bookmarks").delete() end, { de
 map("n", "<leader>bl", function() require("config.bookmarks").list() end, { desc = "Lista zakładek" })
 
 -- Git
-map("n", "<leader>gg", function() require("config.lazygit").open() end, { desc = "lazygit" })
+map("n", "<leader>gg", function() require("config.float_term").open({ "lazygit" }) end, { desc = "lazygit" })
 map("n", "<leader>gs", function() require("fzf-lua").git_status() end, { desc = "Git status" })
 map("n", "<leader>gc", function() require("fzf-lua").git_commits() end, { desc = "Historia projektu" })
 map("n", "<leader>gC", function() require("fzf-lua").git_bcommits() end, { desc = "Historia pliku" })
 map("n", "<leader>gb", function() require("fzf-lua").git_branches() end, { desc = "Gałęzie" })
+
+-- Podgląd Markdowna w glow: szerokie tabele przewijasz strzałkami ←/→, q zamyka
+map("n", "<leader>mp", function()
+    if vim.bo.filetype ~= "markdown" then
+        return vim.notify("To nie jest plik Markdown", vim.log.levels.WARN)
+    end
+    if vim.fn.executable("glow") == 0 then
+        return vim.notify("glow nie jest zainstalowany", vim.log.levels.ERROR)
+    end
+    vim.cmd("silent! write") -- podgląd pokazuje plik z dysku, więc najpierw zapis
+    local file = vim.fn.shellescape(vim.api.nvim_buf_get_name(0))
+    require("config.float_term").open({ "sh", "-c", "PAGER='less -RS' glow -p -w 0 " .. file })
+end, { desc = "Podgląd Markdown (glow)" })

@@ -49,6 +49,9 @@ curl -fLO https://github.com/tree-sitter/tree-sitter/releases/latest/download/tr
 gunzip tree-sitter-linux-x64.gz
 chmod +x tree-sitter-linux-x64
 mv tree-sitter-linux-x64 ~/.local/bin/tree-sitter
+
+# glow (for preview TODO.md file)
+sudo apt install glow
 ```
 
 Make sure `~/.local/bin` is in your `PATH`.
@@ -110,6 +113,7 @@ Leader key: `Space`.
 | `<Esc>` | clear search highlight |
 | `Ctrl-h/j/k/l` | move between windows |
 | `J` / `K` (visual) | move selected lines down / up |
+| `<leader>mp` | preview Markdown in glow (`←`/`→` scroll wide tables, `q` closes) |
 
 ### LSP
 
