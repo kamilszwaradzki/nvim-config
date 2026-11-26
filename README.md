@@ -16,7 +16,9 @@ Built for low-spec hardware (tested on a laptop with 4 GB RAM): native Neovim 0.
 | Running tests | small built-in pytest runner (`lua/config/pytest.lua`) |
 | Fuzzy finding | [fzf-lua](https://github.com/ibhagwan/fzf-lua) (`max-perf` profile) |
 | Git: changes in the current file | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) |
-| Git: full workflow | [lazygit](https://github.com/jesseduffield/lazygit) in a floating window (`lua/config/lazygit.lua`) |
+| Git: full workflow | [lazygit](https://github.com/jesseduffield/lazygit) in a floating window |
+| Markdown preview | [glow](https://github.com/charmbracelet/glow) in a floating window |
+| Offline documentation | [dasht](https://github.com/sunaku/dasht) (Dash docsets, rendered in `w3m`) in a floating window |
 | Project switching | small built-in module (`lua/config/projects.lua`), saved list of paths |
 | Bookmarks with descriptions | small built-in module (`lua/config/bookmarks.lua`), per project |
 | Plugin manager | [lazy.nvim](https://github.com/folke/lazy.nvim) |
@@ -28,13 +30,14 @@ Built for low-spec hardware (tested on a laptop with 4 GB RAM): native Neovim 0.
 - `git`, `curl`, `tar`, a C compiler (`gcc`)
 - [tree-sitter CLI](https://github.com/tree-sitter/tree-sitter/releases) **0.26.1+** (Debian stable ships an older version, so use the release binary)
 - `fzf`, `ripgrep`, `fd`, `bat`
-- `lazygit`
+- `lazygit`, `glow`
+- [dasht](https://github.com/sunaku/dasht) with `sqlite3`, `w3m`, `wget` (optional, for offline docs)
 
 ### Install external tools (Debian)
 
 ```bash
 # system packages
-sudo apt install git curl tar gcc fzf ripgrep fd-find bat lazygit
+sudo apt install git curl tar gcc fzf ripgrep fd-find bat lazygit glow sqlite3 w3m wget
 
 # Python tooling (installed to ~/.local/bin)
 uv tool install basedpyright
@@ -50,8 +53,18 @@ gunzip tree-sitter-linux-x64.gz
 chmod +x tree-sitter-linux-x64
 mv tree-sitter-linux-x64 ~/.local/bin/tree-sitter
 
-# glow (for preview TODO.md file)
-sudo apt install glow
+# dasht (not packaged in Debian)
+git clone --depth 1 https://github.com/sunaku/dasht ~/.local/opt/dasht
+ln -s ~/.local/opt/dasht/bin/* ~/.local/bin/
+dasht-docsets-install python django pandas numpy
+```
+
+If `glow` is not available in your distribution, download the release binary from GitHub into `~/.local/bin`.
+
+To reuse docsets already downloaded by Zeal instead of installing them again, add to `~/.profile`:
+
+```bash
+export DASHT_DOCSETS_DIR="$HOME/.local/share/Zeal/Zeal/docsets"
 ```
 
 Make sure `~/.local/bin` is in your `PATH`.
@@ -90,7 +103,8 @@ Verify:
     │   ├── pytest.lua        # pytest runner
     │   ├── projects.lua      # project switcher
     │   ├── bookmarks.lua     # bookmarks with descriptions
-    │   └── lazygit.lua       # lazygit in a floating window
+    │   ├── float_term.lua    # floating terminal for lazygit, glow and dasht
+    │   └── dasht.lua         # offline documentation lookup
     └── plugins
         ├── lsp.lua           # BasedPyright + Ruff
         ├── treesitter.lua    # parsers, highlighting, folding
@@ -110,10 +124,10 @@ Leader key: `Space`.
 | `<leader>w` | save |
 | `<leader>q` | quit |
 | `<leader>ot` | open the project's `TODO.md` |
+| `<leader>mp` | preview Markdown in glow (`←`/`→` scroll wide tables, `q` closes) |
 | `<Esc>` | clear search highlight |
 | `Ctrl-h/j/k/l` | move between windows |
 | `J` / `K` (visual) | move selected lines down / up |
-| `<leader>mp` | preview Markdown in glow (`←`/`→` scroll wide tables, `q` closes) |
 
 ### LSP
 
@@ -170,6 +184,19 @@ Launch configurations: current file, Django (`manage.py runserver --noreload`), 
 | `<leader>tl` | repeat last run |
 
 Results open in a terminal split at the bottom; press `q` there to close it. Uses `.venv/bin/pytest` from the project if present.
+
+### Documentation
+
+| Keys | Action |
+|---|---|
+| `K` | LSP hover: signature and docstring |
+| `<leader>K` | offline docs for the word under cursor |
+| `<leader>ks` | search offline docs |
+| `:Dasht {query} [docset...]` | search specific docsets, or all of them when none are given |
+
+`<leader>K` and `<leader>ks` search the docsets configured for the current filetype in `lua/config/dasht.lua` (for Python: python, django, pandas, numpy, fastapi, sqlalchemy). Docset names match as substrings, and missing docsets are skipped. Whitespace in a query acts as a wildcard, so `read csv` finds `read_csv`. When nothing is found, a message is shown instead of an empty window.
+
+Pages open in `w3m`: `Tab` / `Shift-Tab` move between links, `Enter` opens, `B` goes back, `q` closes. Link colors are set in `~/.w3m/config` (`anchor_color cyan`, `active_color yellow`), because the default blue is hard to read on dark terminals.
 
 ### Search
 

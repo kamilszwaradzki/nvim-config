@@ -92,3 +92,7 @@ map("n", "<leader>mp", function()
     local file = vim.fn.shellescape(vim.api.nvim_buf_get_name(0))
     require("config.float_term").open({ "sh", "-c", "PAGER='less -RS' glow -p -w 0 " .. file })
 end, { desc = "Podgląd Markdown (glow)" })
+
+-- Dokumentacja offline (dasht)
+map("n", "<leader>K", function() require("config.dasht").cursor() end, { desc = "Dokumentacja: słowo pod kursorem" })
+map("n", "<leader>ks", function() require("config.dasht").prompt() end, { desc = "Dokumentacja: szukaj" })
